@@ -34,7 +34,6 @@ jobs:
       - name: Build macOS App
         run: |
           pyinstaller --windowed --name "ImageCompare" --target-architecture universal2 app/image_compare_pyqt.py
-          zip -r ImageCompare-${{ github.ref_name }}.zip dist/ImageCompare.app
 
       # Create a release and upload binaries
       - name: Create Release
@@ -52,6 +51,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ImageCompare-${{ github.ref_name }}.zip
-          asset_name: ImageCompare-${{ github.ref_name }}.zip
-          content_type: application/zip
+          asset_path: dist/ImageCompare.app
+          asset_name: ImageCompare-${{ github.ref_name }}.app
+          content_type: application/octet-stream
