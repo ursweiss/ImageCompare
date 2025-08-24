@@ -45,5 +45,5 @@ jobs:
           BUILD_DATE: ${{ steps.timestamp.outputs.BUILD_DATE }}
         uses: actions/upload-artifact@v4
         with:
-          name: ImageCompare-$BUILD_DATE.app
+          name: ImageCompare-${BUILD_DATE}.app
           path: dist/ImageCompare.app
