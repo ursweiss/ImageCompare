@@ -1,0 +1,50 @@
+name: Nightly Build
+
+on:
+  schedule:
+    - cron: '0 4 * * *' # Runs daily at 04:00 UTC
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      # Check if code has changed since the last nightly build
+      - name: Check for code changes
+        id: check_changes
+        run: |
+          git fetch origin main
+          if git diff --quiet origin/main; then
+            echo "No changes detected. Skipping build."
+            exit 0
+          fi
+
+      # Build binaries
+      - name: Build binaries
+        run: |
+          pyinstaller --onefile --windowed --name "ImageCompare" app/image_compare_pyqt.py
+
+      # Upload binaries as artifacts
+      - name: Upload binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-build
+          path: dist/
