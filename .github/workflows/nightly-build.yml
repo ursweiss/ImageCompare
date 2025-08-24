@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 4 * * *' # Runs daily at 04:00 UTC
   workflow_dispatch: # Allows manual triggering of the workflow
+  push:
+    branches:
+      - develop
 
 jobs:
   build:
