@@ -45,9 +45,15 @@ jobs:
         run: |
           pyinstaller --onefile --windowed --name "ImageCompare" app/image_compare_pyqt.py
 
+      # Generate timestamp for unique artifact name
+      - name: Generate timestamp
+        id: timestamp
+        run: |
+          echo "::set-output name=date::$(date +'%Y%m%d-%H%M%S')"
+
       # Upload binaries as artifacts
       - name: Upload binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: nightly-build
+          name: ImageCompare-${{ steps.timestamp.outputs.date }}.app
           path: dist/
