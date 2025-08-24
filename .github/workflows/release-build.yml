@@ -35,6 +35,12 @@ jobs:
         run: |
           pyinstaller --onefile --windowed --name "ImageCompare" app/image_compare_pyqt.py
 
+      # Build macOS App
+      - name: Build macOS App
+        run: |
+          pyinstaller --windowed --name "ImageCompare" --target-architecture universal2 app/image_compare_pyqt.py
+          zip -r ImageCompare-${{ github.ref_name }}.zip dist/ImageCompare.app
+
       # Create a release and upload binaries
       - name: Create Release
         id: create_release
@@ -46,10 +52,11 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }} # Mark as prerelease if tag contains a hyphen
           generate_release_notes: true
 
+      # Upload Release Assets
       - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/ImageCompare
-          asset_name: ImageCompare-${{ github.ref_name }}.app
-          content_type: application/octet-stream
+          asset_path: ImageCompare-${{ github.ref_name }}.zip
+          asset_name: ImageCompare-${{ github.ref_name }}.zip
+          content_type: application/zip
