@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest # Use macOS runner
 
     steps:
       # Checkout the repository
@@ -29,16 +29,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r setup/requirements.txt
           pip install pyinstaller
-
-      # Check if code has changed since the last nightly build
-      - name: Check for code changes
-        id: check_changes
-        run: |
-          git fetch origin main
-          if git diff --quiet origin/main; then
-            echo "No changes detected. Skipping build."
-            exit 0
-          fi
 
       # Build macOS App
       - name: Build macOS App

@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest # Use macOS runner
 
     steps:
       # Checkout the repository
@@ -29,11 +29,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r setup/requirements.txt
           pip install pyinstaller
-
-      # Build binaries
-      - name: Build binaries
-        run: |
-          pyinstaller --onefile --windowed --name "ImageCompare" app/image_compare_pyqt.py
 
       # Build macOS App
       - name: Build macOS App
