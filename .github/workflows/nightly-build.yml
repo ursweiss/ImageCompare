@@ -34,7 +34,7 @@ jobs:
         run: |
           BUILD_ARGS="--onefile"
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            BUILD_ARGS="--onedir --target-architecture universal2"
+            BUILD_ARGS=""
           fi
           pyinstaller --windowed --name "ImageCompare" ${BUILD_ARGS} app/image_compare_pyqt.py
         shell: bash
