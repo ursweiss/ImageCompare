@@ -40,17 +40,23 @@ jobs:
           echo "BUILD_DATE=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
 
       - name: Rename executable
+        id: rename
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            mv dist/ImageCompare.app dist/ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}.app
+            BINARY_NAME=ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}.app
+            mv dist/ImageCompare.app dist/${BINARY_NAME}
           elif [[ "$RUNNER_OS" == "Linux" ]]; then
-            mv dist/ImageCompare dist/ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}
+            BINARY_NAME=ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}
+            mv dist/ImageCompare dist/${BINARY_NAME}
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            mv dist/ImageCompare.exe dist/ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}.exe
+            BINARY_NAME=ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}.exe
+            mv dist/ImageCompare.exe dist/${BINARY_NAME}
           fi
+          echo "BINARY_NAME=${BINARY_NAME}" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          path: dist/*
+          name: ${{ steps.rename.outputs.BINARY_NAME }}
+          path: dist/${{ steps.rename.outputs.BINARY_NAME }}
