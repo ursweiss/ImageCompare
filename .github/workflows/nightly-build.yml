@@ -41,11 +41,11 @@ jobs:
       - name: Rename executable
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            mv dist/ImageCompare.app dist/ImageCompare-nightly-${{ BUILD_DATE }}.app
+            mv dist/ImageCompare.app dist/ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}".app
           elif [[ "$RUNNER_OS" == "Linux" ]]; then
-            mv dist/ImageCompare dist/ImageCompare-nightly-${{ BUILD_DATE }}
+            mv dist/ImageCompare dist/ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            mv dist/ImageCompare.exe dist/ImageCompare-nightly-${{ BUILD_DATE }}.exe
+            mv dist/ImageCompare.exe dist/ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}.exe
           fi
         shell: bash
 
