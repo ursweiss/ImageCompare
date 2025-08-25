@@ -32,7 +32,11 @@ jobs:
 
       - name: Build executable
         run: |
-          pyinstaller --onefile --windowed --name "ImageCompare" app/image_compare_pyqt.py
+          BUILD_ARGS=""
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            BUILD_ARGS="--target-architecture universal2"
+          fi
+          pyinstaller --onefile --windowed --name "ImageCompare" ${BUILD_ARGS} app/image_compare_pyqt.py
 
       - name: Generate timestamp
         id: timestamp
