@@ -37,6 +37,7 @@ jobs:
             BUILD_ARGS="--target-architecture universal2"
           fi
           pyinstaller --onefile --windowed --name "ImageCompare" ${BUILD_ARGS} app/image_compare_pyqt.py
+        shell: bash
 
       - name: Generate timestamp
         id: timestamp
