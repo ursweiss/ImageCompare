@@ -63,20 +63,8 @@ jobs:
           echo "BINARY_NAME=${BINARY_NAME}" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Update nightly release
-        if: runner.os == 'macOS'
-        uses: eine/tip@master
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
         with:
-          tag: nightly
-          rm: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: dist/${{ steps.rename.outputs.BINARY_NAME }}
-      
-      - name: Update nightly release
-        if: runner.os != 'macOS'
-        uses: eine/tip@master
-        with:
-          tag: nightly
-          rm: false
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: dist/${{ steps.rename.outputs.BINARY_NAME }}
+          name: ${{ steps.rename.outputs.BINARY_NAME }}
+          path: dist/${{ steps.rename.outputs.BINARY_NAME }}
