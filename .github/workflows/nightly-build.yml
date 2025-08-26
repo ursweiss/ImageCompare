@@ -12,6 +12,8 @@ jobs:
     strategy:
       matrix:
         os: [ macos-15, ubuntu-latest, windows-latest ]
+      fail-fast: false
+      max-parallel: 1
 
     runs-on: ${{ matrix.os }}
 
@@ -61,8 +63,20 @@ jobs:
           echo "BINARY_NAME=${BINARY_NAME}" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Upload binaries
-        uses: actions/upload-artifact@v4
+      - name: Update nightly release
+        if: runner.os == 'macOS'
+        uses: eine/tip@master
         with:
-          name: ${{ steps.rename.outputs.BINARY_NAME }}
-          path: dist/${{ steps.rename.outputs.BINARY_NAME }}
+          tag: nightly
+          rm: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: dist/${{ steps.rename.outputs.BINARY_NAME }}
+      
+      - name: Update nightly release
+        if: runner.os != 'macOS'
+        uses: eine/tip@master
+        with:
+          tag: nightly
+          rm: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: dist/${{ steps.rename.outputs.BINARY_NAME }}
