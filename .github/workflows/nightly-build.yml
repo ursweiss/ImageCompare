@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        os: [ macos-15, ubuntu-latest, windows-latest ]
 
     runs-on: ${{ matrix.os }}
 
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.9.6'
 
       - name: Install dependencies
         run: |
@@ -43,6 +43,7 @@ jobs:
         id: timestamp
         run: |
           echo "BUILD_DATE=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Rename executable
         id: rename
