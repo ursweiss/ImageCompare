@@ -1,6 +1,8 @@
 # Image Compare Application
 
-> **Disclaimer**: This application was primarily written by AI (GitHub Copilot and Claude) with human guidance and revi## Project Structure
+> **Disclaimer**: This application was primarily written by AI (GitHub Copilot and Claude) with human guidance and reviewed Project Structure
+
+> **NOTE**: There are some issues when comparing images of different sizes and one tries to zoom in, what shouldn't be possible in the first place. I'll try to fix it within the next days.
 
 ```
 ImageCompare/
