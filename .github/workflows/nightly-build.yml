@@ -2,49 +2,69 @@ name: Nightly Build
 
 on:
   schedule:
-    - cron: '0 4 * * *' # Runs daily at 04:00 UTC
-  workflow_dispatch: # Allows manual triggering of the workflow
+    - cron: '0 4 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+
+    strategy:
+      matrix:
+        os: [ macos-15, ubuntu-latest, windows-latest ]
+      fail-fast: false
+      max-parallel: 1
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-      # Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # Set up Python
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      # Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r setup/requirements.txt
           pip install pyinstaller
 
-      # Check if code has changed since the last nightly build
-      - name: Check for code changes
-        id: check_changes
+      - name: Build executable
         run: |
-          git fetch origin main
-          if git diff --quiet origin/main; then
-            echo "No changes detected. Skipping build."
-            exit 0
+          BUILD_ARGS="--onefile"
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            BUILD_ARGS=""
           fi
+          pyinstaller --windowed --name "ImageCompare" ${BUILD_ARGS} app/image_compare_pyqt.py
+        shell: bash
 
-      # Build binaries
-      - name: Build binaries
+      - name: Generate timestamp
+        id: timestamp
         run: |
-          pyinstaller --onefile --windowed --name "ImageCompare" app/image_compare_pyqt.py
+          echo "BUILD_DATE=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+        shell: bash
 
-      # Upload binaries as artifacts
+      - name: Rename executable
+        id: rename
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            BINARY_NAME=ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}.app
+            mv dist/ImageCompare.app dist/${BINARY_NAME}
+          elif [[ "$RUNNER_OS" == "Linux" ]]; then
+            BINARY_NAME=ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}
+            mv dist/ImageCompare dist/${BINARY_NAME}
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            BINARY_NAME=ImageCompare-nightly-${{ steps.timestamp.outputs.BUILD_DATE }}.exe
+            mv dist/ImageCompare.exe dist/${BINARY_NAME}
+          fi
+          echo "BINARY_NAME=${BINARY_NAME}" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Upload binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: nightly-build
-          path: dist/
+          name: ${{ steps.rename.outputs.BINARY_NAME }}
+          path: dist/${{ steps.rename.outputs.BINARY_NAME }}
